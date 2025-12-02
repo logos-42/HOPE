@@ -84,6 +84,10 @@ fn train_command(args: TrainArgs) -> Result<()> {
         train_config.model.hidden_size,
         train_config.model.vocab_size,
         train_config.model.seq_len);
+    info!("Training config: batch_size={}, num_steps={}, learning_rate={}", 
+        train_config.training.batch_size,
+        train_config.training.num_steps,
+        train_config.training.learning_rate);
 
     // Initialize device (CPU for now)
     let device = Default::default();
@@ -97,15 +101,15 @@ fn train_command(args: TrainArgs) -> Result<()> {
     let mut trainer = HopeTrainer::new(model, train_config.clone(), &device);
 
     // Training loop
-    info!("Starting training for {} steps...", train_config.num_steps);
+    info!("Starting training for {} steps...", train_config.training.num_steps);
     
     let mut total_loss = 0.0;
     let mut loss_count = 0;
 
-    for step in 0..train_config.num_steps {
+    for step in 0..train_config.training.num_steps {
         // Generate random batch data for testing
         let batch = generate_random_batch::<Backend>(
-            train_config.batch_size,
+            train_config.training.batch_size,
             train_config.model.seq_len,
             train_config.model.vocab_size,
             &device,
@@ -125,12 +129,12 @@ fn train_command(args: TrainArgs) -> Result<()> {
         loss_count += 1;
 
         // Logging
-        if (step + 1) % train_config.log_every == 0 {
+        if (step + 1) % train_config.training.log_every == 0 {
             let avg_loss = total_loss / loss_count as f32;
             info!(
                 "Step {}/{}: Loss = {:.6} (avg: {:.6})",
                 step + 1,
-                train_config.num_steps,
+                train_config.training.num_steps,
                 loss_value,
                 avg_loss
             );

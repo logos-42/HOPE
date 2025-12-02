@@ -78,7 +78,7 @@ impl<B: AutodiffBackend> HopeTrainer<B> {
         let grads = GradientsParams::from_grads(loss.backward(), &self.model);
 
         // Optimizer step
-        let lr = f64::from(self.config.learning_rate);
+        let lr = f64::from(self.config.training.learning_rate);
         self.model = self.optimizer.step(lr, self.model.clone(), grads);
 
         TrainOutput::new(loss, 1)

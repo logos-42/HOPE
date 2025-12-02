@@ -195,8 +195,7 @@ impl fmt::Display for HopeConfig {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct TrainConfig {
-    pub model: HopeConfig,
+pub struct TrainingConfig {
     #[serde(default = "default_batch_size")]
     pub batch_size: usize,
     #[serde(default = "default_num_steps")]
@@ -208,6 +207,31 @@ pub struct TrainConfig {
     #[serde(default = "default_use_random_data")]
     #[allow(dead_code)]
     pub use_random_data: bool,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct TrainConfig {
+    pub model: HopeConfig,
+    #[serde(rename = "training")]
+    pub training: TrainingConfig,
+}
+
+impl TrainConfig {
+    pub fn batch_size(&self) -> usize {
+        self.training.batch_size
+    }
+    
+    pub fn num_steps(&self) -> usize {
+        self.training.num_steps
+    }
+    
+    pub fn learning_rate(&self) -> f32 {
+        self.training.learning_rate
+    }
+    
+    pub fn log_every(&self) -> usize {
+        self.training.log_every
+    }
 }
 
 fn default_batch_size() -> usize {

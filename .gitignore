@@ -20,3 +20,6 @@ Thumbs.db
 *.bak
 *.backup
 
+# Rust compiler temporary files
+*.long-type-*.txt
+
