@@ -1,8 +1,9 @@
-use burn::tensor::{Tensor, backend::AutodiffBackend};
+use burn::tensor::{Tensor, backend::Backend};
 use crate::config::DeepOptimizerConfig;
 
+#[allow(dead_code)]
 #[derive(Clone, Debug)]
-pub struct DeepOptimizerState<B: AutodiffBackend> {
+pub struct DeepOptimizerState<B: Backend> {
     pub fast_params: Vec<Tensor<B, 3>>,
     pub slow_params: Vec<Tensor<B, 3>>,
     pub fast_ema: Vec<Tensor<B, 3>>,
@@ -10,17 +11,20 @@ pub struct DeepOptimizerState<B: AutodiffBackend> {
     pub step_count: usize,
 }
 
+#[allow(dead_code)]
 pub struct DeepOptimizer {
     config: DeepOptimizerConfig,
 }
 
 impl DeepOptimizer {
+    #[allow(dead_code)]
     pub fn new(config: DeepOptimizerConfig) -> Self {
         config.validate();
         Self { config }
     }
 
-    pub fn init_state<B: AutodiffBackend>(
+    #[allow(dead_code)]
+    pub fn init_state<B: Backend>(
         &self,
         num_levels: usize,
         batch: usize,
@@ -39,7 +43,8 @@ impl DeepOptimizer {
         }
     }
 
-    pub fn update_fast_params<B: AutodiffBackend>(
+    #[allow(dead_code)]
+    pub fn update_fast_params<B: Backend>(
         &self,
         state: &mut DeepOptimizerState<B>,
         gradients: &[Tensor<B, 3>],
@@ -69,7 +74,8 @@ impl DeepOptimizer {
         state.step_count += 1;
     }
 
-    pub fn update_slow_params<B: AutodiffBackend>(
+    #[allow(dead_code)]
+    pub fn update_slow_params<B: Backend>(
         &self,
         state: &mut DeepOptimizerState<B>,
         learning_rate: f32,
@@ -92,7 +98,8 @@ impl DeepOptimizer {
         }
     }
 
-    pub fn compress_gradient<B: AutodiffBackend>(
+    #[allow(dead_code)]
+    pub fn compress_gradient<B: Backend>(
         &self,
         gradient: &Tensor<B, 3>,
         device: &B::Device,
@@ -118,11 +125,13 @@ impl DeepOptimizer {
         grad_avg.slice([0..batch, 0..compress_dim])
     }
 
-    pub fn should_sync<B: AutodiffBackend>(&self, state: &DeepOptimizerState<B>) -> bool {
+    #[allow(dead_code)]
+    pub fn should_sync<B: Backend>(&self, state: &DeepOptimizerState<B>) -> bool {
         self.config.enabled && (state.step_count % self.config.sync_interval == 0)
     }
 
-    pub fn sync<B: AutodiffBackend>(
+    #[allow(dead_code)]
+    pub fn sync<B: Backend>(
         &self,
         state: &mut DeepOptimizerState<B>,
     ) {
@@ -136,7 +145,8 @@ impl DeepOptimizer {
         }
     }
 
-    pub fn get_fast_params<'a, B: AutodiffBackend>(
+    #[allow(dead_code)]
+    pub fn get_fast_params<'a, B: Backend>(
         &self,
         state: &'a DeepOptimizerState<B>,
         level_idx: usize,
@@ -144,7 +154,8 @@ impl DeepOptimizer {
         state.fast_params.get(level_idx)
     }
 
-    pub fn get_slow_params<'a, B: AutodiffBackend>(
+    #[allow(dead_code)]
+    pub fn get_slow_params<'a, B: Backend>(
         &self,
         state: &'a DeepOptimizerState<B>,
         level_idx: usize,
@@ -152,6 +163,7 @@ impl DeepOptimizer {
         state.slow_params.get(level_idx)
     }
 
+    #[allow(dead_code)]
     pub fn config(&self) -> &DeepOptimizerConfig {
         &self.config
     }

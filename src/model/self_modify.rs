@@ -1,19 +1,19 @@
 use burn::constant;
 use burn::module::Module;
 use burn::nn::{Dropout, DropoutConfig, LayerNorm, LayerNormConfig, Linear, LinearConfig};
-use burn::tensor::{Tensor, activation, backend::AutodiffBackend};
+use burn::tensor::{Tensor, activation, backend::Backend};
 use crate::config::SelfModifyConfig;
 
 constant!(SelfModifyConfig);
 
 #[derive(Clone, Debug)]
-pub struct SelfModifyState<B: AutodiffBackend> {
+pub struct SelfModifyState<B: Backend> {
     pub meta_state: Tensor<B, 2>,
     pub update_count: usize,
 }
 
 #[derive(Module, Debug)]
-pub struct SelfModifyModule<B: AutodiffBackend> {
+pub struct SelfModifyModule<B: Backend> {
     #[module(skip)]
     config: SelfModifyConfig,
     meta_network: MetaNetwork<B>,
@@ -24,26 +24,26 @@ pub struct SelfModifyModule<B: AutodiffBackend> {
 }
 
 #[derive(Module, Debug)]
-struct MetaNetwork<B: AutodiffBackend> {
+struct MetaNetwork<B: Backend> {
     layer1: Linear<B>,
     layer2: Linear<B>,
     layer3: Linear<B>,
 }
 
 #[derive(Module, Debug)]
-struct WeightModNetwork<B: AutodiffBackend> {
+struct WeightModNetwork<B: Backend> {
     input_proj: Linear<B>,
     hidden: Linear<B>,
     output_proj: Linear<B>,
 }
 
 #[derive(Module, Debug)]
-struct GradientCompressor<B: AutodiffBackend> {
+struct GradientCompressor<B: Backend> {
     compress: Linear<B>,
     decompress: Linear<B>,
 }
 
-impl<B: AutodiffBackend> SelfModifyModule<B> {
+impl<B: Backend> SelfModifyModule<B> {
     pub fn new(
         config: SelfModifyConfig,
         hidden_size: usize,
@@ -155,6 +155,7 @@ impl<B: AutodiffBackend> SelfModifyModule<B> {
         self.norm.forward(modified)
     }
 
+    #[allow(dead_code)]
     pub fn compress_gradients(
         &self,
         gradients: &Tensor<B, 3>,
@@ -181,6 +182,7 @@ impl<B: AutodiffBackend> SelfModifyModule<B> {
         activation::tanh(compressed)
     }
 
+    #[allow(dead_code)]
     pub fn decompress_gradients(
         &self,
         compressed: &Tensor<B, 2>,
@@ -200,12 +202,13 @@ impl<B: AutodiffBackend> SelfModifyModule<B> {
             .reshape(shape)
     }
 
+    #[allow(dead_code)]
     pub fn should_update(&self, state: &SelfModifyState<B>) -> bool {
         self.config.enabled && (state.update_count % self.config.update_frequency == 0)
     }
 
+    #[allow(dead_code)]
     pub fn config(&self) -> &SelfModifyConfig {
         &self.config
     }
 }
-

@@ -1,13 +1,13 @@
 use burn::constant;
 use burn::module::Module;
 use burn::nn::{LayerNorm, LayerNormConfig, Linear, LinearConfig};
-use burn::tensor::{Tensor, activation, backend::AutodiffBackend};
+use burn::tensor::{Tensor, activation, backend::Backend};
 use crate::config::ContinuumMemConfig;
 
 constant!(ContinuumMemConfig);
 
 #[derive(Clone, Debug)]
-pub struct ContinuumMemoryState<B: AutodiffBackend> {
+pub struct ContinuumMemoryState<B: Backend> {
     pub ultra_short: Tensor<B, 3>,
     pub short: Tensor<B, 3>,
     pub mid: Tensor<B, 3>,
@@ -16,7 +16,7 @@ pub struct ContinuumMemoryState<B: AutodiffBackend> {
 }
 
 #[derive(Module, Debug)]
-pub struct ContinuumMemory<B: AutodiffBackend> {
+pub struct ContinuumMemory<B: Backend> {
     #[module(skip)]
     config: ContinuumMemConfig,
     query_proj: Linear<B>,
@@ -25,7 +25,7 @@ pub struct ContinuumMemory<B: AutodiffBackend> {
     norm: LayerNorm<B>,
 }
 
-impl<B: AutodiffBackend> ContinuumMemory<B> {
+impl<B: Backend> ContinuumMemory<B> {
     pub fn new(config: ContinuumMemConfig, hidden_size: usize, device: &B::Device) -> Self {
         config.validate();
         let query_proj = LinearConfig::new(hidden_size, hidden_size).init(device);
@@ -140,8 +140,8 @@ impl<B: AutodiffBackend> ContinuumMemory<B> {
         let values = Tensor::cat(all_values, 1);
 
         // Simplified attention: compute weighted sum over all memory banks
-        let batch = query.dims()[0];
-        let seq_len = query.dims()[1];
+        let _batch = query.dims()[0];
+        let _seq_len = query.dims()[1];
         let hidden = query.dims()[2];
         let _mem_seq_len = keys.dims()[1];
 
@@ -175,6 +175,7 @@ impl<B: AutodiffBackend> ContinuumMemory<B> {
         old.clone() * one_minus_alpha + new.clone() * alpha
     }
 
+    #[allow(dead_code)]
     pub fn config(&self) -> &ContinuumMemConfig {
         &self.config
     }

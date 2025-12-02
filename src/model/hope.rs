@@ -2,7 +2,7 @@ use burn::constant;
 use burn::module::Module;
 use burn::nn::transformer::{TransformerEncoder, TransformerEncoderConfig, TransformerEncoderInput};
 use burn::nn::{Embedding, EmbeddingConfig, Linear, LinearConfig};
-use burn::tensor::{Int, Tensor, backend::AutodiffBackend};
+use burn::tensor::{Int, Tensor, backend::Backend};
 use crate::config::HopeConfig;
 use super::continuum_mem::{ContinuumMemory, ContinuumMemoryState};
 use super::self_modify::{SelfModifyModule, SelfModifyState};
@@ -10,18 +10,19 @@ use super::self_modify::{SelfModifyModule, SelfModifyState};
 constant!(HopeConfig);
 
 #[derive(Clone, Debug)]
-pub struct HopeInput<B: AutodiffBackend> {
+pub struct HopeInput<B: Backend> {
     pub tokens: Tensor<B, 2, Int>,
 }
 
 #[derive(Clone, Debug)]
-pub struct HopeOutput<B: AutodiffBackend> {
+pub struct HopeOutput<B: Backend> {
     pub logits: Tensor<B, 3>,
+    #[allow(dead_code)]
     pub hidden_states: Tensor<B, 3>,
 }
 
 #[derive(Clone, Debug)]
-pub struct HopeCarry<B: AutodiffBackend> {
+pub struct HopeCarry<B: Backend> {
     pub level_states: Vec<Tensor<B, 3>>,
     pub continuum_memory: Option<ContinuumMemoryState<B>>,
     pub self_modify: Option<SelfModifyState<B>>,
@@ -29,7 +30,7 @@ pub struct HopeCarry<B: AutodiffBackend> {
 }
 
 #[derive(Module, Debug)]
-pub struct HopeModel<B: AutodiffBackend> {
+pub struct HopeModel<B: Backend> {
     #[module(skip)]
     config: HopeConfig,
     token_embed: Embedding<B>,
@@ -42,7 +43,7 @@ pub struct HopeModel<B: AutodiffBackend> {
     embed_scale: f32,
 }
 
-impl<B: AutodiffBackend> HopeModel<B> {
+impl<B: Backend> HopeModel<B> {
     pub fn new(config: HopeConfig, device: &B::Device) -> Self {
         config.validate();
         
@@ -209,6 +210,7 @@ impl<B: AutodiffBackend> HopeModel<B> {
         (carry, output)
     }
 
+    #[allow(dead_code)]
     pub fn config(&self) -> &HopeConfig {
         &self.config
     }

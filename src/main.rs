@@ -15,6 +15,7 @@ use config::TrainConfig;
 use model::HopeModel;
 use training::{HopeTrainer, BatchData, generate_random_batch};
 
+// 使用单层 Autodiff 包装 - 模型使用 Backend trait，只在训练时需要 AutodiffBackend
 type Backend = Autodiff<NdArray<f32>>;
 
 #[derive(Debug, Parser)]

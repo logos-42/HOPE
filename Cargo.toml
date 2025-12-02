@@ -6,7 +6,7 @@ authors = ["HOPE Model Devs"]
 license = "Apache-2.0"
 
 [features]
-default = ["wgpu-backend"]
+default = []
 wgpu-backend = ["burn-wgpu"]
 tch-backend = ["burn-tch"]
 

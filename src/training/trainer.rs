@@ -8,6 +8,7 @@ use crate::model::{HopeModel, HopeInput};
 #[derive(Clone, Debug)]
 pub struct TrainOutput<B: Backend> {
     pub loss: Tensor<B, 1>,
+    #[allow(dead_code)]
     pub step: usize,
 }
 
@@ -17,20 +18,14 @@ impl<B: Backend> TrainOutput<B> {
     }
 }
 
-pub struct HopeTrainer<B: AutodiffBackend>
-where
-    <B as AutodiffBackend>::InnerBackend: AutodiffBackend,
-{
+pub struct HopeTrainer<B: AutodiffBackend> {
     model: HopeModel<B>,
     optimizer: OptimizerAdaptor<Adam, HopeModel<B>, B>,
     loss_fn: CrossEntropyLoss<B>,
     config: TrainConfig,
 }
 
-impl<B: AutodiffBackend> HopeTrainer<B>
-where
-    <B as AutodiffBackend>::InnerBackend: AutodiffBackend,
-{
+impl<B: AutodiffBackend> HopeTrainer<B> {
     pub fn new(
         model: HopeModel<B>,
         config: TrainConfig,
@@ -89,6 +84,7 @@ where
         TrainOutput::new(loss, 1)
     }
 
+    #[allow(dead_code)]
     pub fn model(&self) -> &HopeModel<B> {
         &self.model
     }

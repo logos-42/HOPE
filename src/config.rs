@@ -206,6 +206,7 @@ pub struct TrainConfig {
     #[serde(default = "default_log_every")]
     pub log_every: usize,
     #[serde(default = "default_use_random_data")]
+    #[allow(dead_code)]
     pub use_random_data: bool,
 }
 
