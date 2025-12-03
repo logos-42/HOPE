@@ -23,3 +23,26 @@ Thumbs.db
 # Rust compiler temporary files
 *.long-type-*.txt
 
+# Training artifacts
+checkpoints/
+*.mpk
+*.ckpt
+*.pth
+*.pt
+
+# Training data (large files)
+data/
+datasets/
+*.bin
+*.idx
+
+# Model outputs
+outputs/
+models/
+*.model
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+

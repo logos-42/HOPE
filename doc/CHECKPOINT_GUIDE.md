@@ -372,5 +372,5 @@ cargo run --bin export-model -- \
 
 📚 **相关文档**：
 - [主要训练指南](README.md)
-- [书籍训练指南](BOOK_TRAINING_GUIDE.md)
+- [书籍训练指南](doc/BOOK_TRAINING_GUIDE.md)
 
