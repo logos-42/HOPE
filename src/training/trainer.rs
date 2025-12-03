@@ -72,19 +72,20 @@ impl<B: AutodiffBackend> HopeTrainer<B> {
         let logits_flat = logits.reshape([batch_size * seq_len, vocab_size]);
         let targets_flat = targets.reshape([batch_size * seq_len]);
 
-        let loss = self.loss_fn.forward(logits_flat.clone(), targets_flat.clone());
+        // Avoid unnecessary clones - loss_fn may need ownership, but we can avoid cloning inputs
+        let loss = self.loss_fn.forward(logits_flat, targets_flat);
 
         // Backward pass
         let grads = GradientsParams::from_grads(loss.backward(), &self.model);
 
-        // Optimizer step
+        // Optimizer step - use std::mem::take to avoid cloning the entire model
         let lr = f64::from(self.config.training.learning_rate);
-        self.model = self.optimizer.step(lr, self.model.clone(), grads);
+        let model = std::mem::take(&mut self.model);
+        self.model = self.optimizer.step(lr, model, grads);
 
         TrainOutput::new(loss, 1)
     }
 
-    #[allow(dead_code)]
     pub fn model(&self) -> &HopeModel<B> {
         &self.model
     }
@@ -125,5 +126,8 @@ pub fn generate_random_batch<B: Backend>(
     let targets = Tensor::cat(vec![targets, pad_token], 1);
 
     BatchData::new(tokens, targets)
+}
+
+w(tokens, targets)
 }
 

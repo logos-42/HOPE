@@ -1,0 +1,44 @@
+{
+  "model": {
+    "hidden_size": 128,
+    "vocab_size": 256,
+    "seq_len": 64,
+    "num_heads": 4,
+    "num_layers": 2,
+    "ff_multiplier": 2.0,
+    "dropout": 0.1,
+    "num_levels": 2,
+    "level_timescales": [1, 4],
+    "continuum_mem": {
+      "enabled": true,
+      "ultra_short_span": 2,
+      "short_span": 8,
+      "mid_span": 16,
+      "long_span": 32,
+      "episodic_span": 64
+    },
+    "self_modify": {
+      "enabled": false,
+      "meta_lr": 1e-5,
+      "update_frequency": 8,
+      "weight_mod_dim": 64
+    },
+    "deep_optimizer": {
+      "enabled": false,
+      "fast_lr_scale": 1.0,
+      "slow_lr_scale": 0.1,
+      "fast_ema": 0.9,
+      "slow_ema": 0.99,
+      "sync_interval": 64,
+      "gradient_compression_dim": 128
+    }
+  },
+  "training": {
+    "batch_size": 2,
+    "learning_rate": 1e-4,
+    "num_steps": 10,
+    "log_every": 2,
+    "use_random_data": true
+  }
+}
+

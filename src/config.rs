@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
@@ -207,6 +208,46 @@ pub struct TrainingConfig {
     #[serde(default = "default_use_random_data")]
     #[allow(dead_code)]
     pub use_random_data: bool,
+    #[serde(default = "default_checkpoint_dir")]
+    pub checkpoint_dir: PathBuf,
+    #[serde(default = "default_save_every")]
+    pub save_every: usize,
+    #[serde(default)]
+    pub resume_from: Option<PathBuf>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DataType {
+    Random,
+    Text,
+    Books,
+}
+
+impl Default for DataType {
+    fn default() -> Self {
+        DataType::Random
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct DataConfig {
+    #[serde(default)]
+    pub data_type: DataType,
+    #[serde(default)]
+    pub data_path: Option<PathBuf>,
+    #[serde(default)]
+    pub tokenizer_path: Option<PathBuf>,
+}
+
+impl Default for DataConfig {
+    fn default() -> Self {
+        Self {
+            data_type: DataType::Random,
+            data_path: None,
+            tokenizer_path: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -214,6 +255,8 @@ pub struct TrainConfig {
     pub model: HopeConfig,
     #[serde(rename = "training")]
     pub training: TrainingConfig,
+    #[serde(default)]
+    pub data: DataConfig,
 }
 
 impl TrainConfig {
@@ -252,5 +295,13 @@ fn default_log_every() -> usize {
 
 fn default_use_random_data() -> bool {
     true
+}
+
+fn default_checkpoint_dir() -> PathBuf {
+    PathBuf::from("./checkpoints")
+}
+
+fn default_save_every() -> usize {
+    100
 }
 
